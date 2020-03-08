@@ -4,4 +4,19 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+	<PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageId>BloomFilter.NET</PackageId>
+  	<Authors>Jonathan LEI</Authors>
+		<Description>A generic bloom filter implementation for .NET</Description>
+		<Copyright>Copyright © Jonathan LEI 2020</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<RepositoryUrl>https://github.com/xJonathanLEI/BloomFilter.NET</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/xJonathanLEI/BloomFilter.NET</PackageProjectUrl>
+  </PropertyGroup>
+
 </Project>
