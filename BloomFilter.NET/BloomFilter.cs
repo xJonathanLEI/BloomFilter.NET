@@ -13,6 +13,8 @@ namespace BloomFilter
         private readonly BitArray bitArray;
         private readonly HashFunctionFactory<T> hashFuncFactory;
 
+        private const int BitsInByte = 8;
+
         /// <summary>
         /// Initializes the bloom filter and sets the optimal number of hashes. 
         /// </summary>
@@ -51,6 +53,40 @@ namespace BloomFilter
 
             this.bitArray = new BitArray(bitSize);
             this.hashFuncFactory = hashFuncFactory;
+        }
+
+
+        /// <summary>
+        /// Import from an existing bloom filter
+        /// </summary>
+        /// <param name="filter">Bytes from the existing bloom filter</param>
+        /// <param name="setSize">Size of the set (n)</param>
+        /// <param name="numberOfHashes">Number of hashing functions (k)</param>
+        public BloomFilter(byte[] filter, int setSize, int numberOfHashes) : this(filter, setSize, numberOfHashes, DefaultHashFunctionFactory<T>.Instance) { }
+
+        /// <summary>
+        /// Import from an existing bloom filter
+        /// </summary>
+        /// <param name="filter">Bytes from the existing bloom filter</param>
+        /// <param name="setSize">Size of the set (n)</param>
+        /// <param name="numberOfHashes">Number of hashing functions (k)</param>
+        /// <param name="hashFuncFactory">Hashing function factory</param>
+        public BloomFilter(byte[] filter, int setSize, int numberOfHashes, HashFunctionFactory<T> hashFuncFactory)
+        {
+            BitSize = filter.Length * BitsInByte;
+            SetSize = setSize;
+            NumberOfHashes = numberOfHashes;
+
+            this.bitArray = new BitArray(BitSize);
+            this.hashFuncFactory = hashFuncFactory;
+
+            for (int ind = 0; ind < filter.Length; ind++)
+            {
+                for (int bit = 0; bit < BitsInByte; bit++)
+                {
+                    this.bitArray[ind * BitsInByte + bit] = (filter[ind] & (1 << (BitsInByte - 1 - bit))) != 0;
+                }
+            }
         }
 
         /// <summary>

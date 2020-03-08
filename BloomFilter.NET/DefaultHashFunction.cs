@@ -21,7 +21,7 @@ namespace BloomFilter
 
     public class DefaultHashFunctionFactory<T> : HashFunctionFactory<T>
     {
-        public static DefaultHashFunctionFactory<T> Instance = new DefaultHashFunctionFactory<T>();
+        public static DefaultHashFunctionFactory<T> Instance => new DefaultHashFunctionFactory<T>();
 
         public override HashFunction<T> Produce(T element, int bitSize)
         {
