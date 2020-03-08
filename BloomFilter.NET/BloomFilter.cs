@@ -17,14 +17,7 @@ namespace BloomFilter
         /// </summary>
         /// <param name="bitSize">Size of the bloom filter in bits (m)</param>
         /// <param name="setSize">Size of the set (n)</param>
-        public BloomFilter(int bitSize, int setSize)
-        {
-            BitSize = bitSize;
-            SetSize = setSize;
-            NumberOfHashes = OptimalNumberOfHashes(BitSize, SetSize);
-
-            bitArray = new BitArray(bitSize);
-        }
+        public BloomFilter(int bitSize, int setSize) : this(bitSize, setSize, OptimalNumberOfHashes(bitSize, setSize)) { }
 
         /// <summary>
         /// Initializes the bloom filter with a manual number of hashes.
@@ -130,7 +123,7 @@ namespace BloomFilter
         /// <param name="bitSize">Size of the bloom filter in bits (m)</param>
         /// <param name="setSize">Size of the set (n)</param>
         /// <returns>The optimal number of hashes</returns>
-        private int OptimalNumberOfHashes(int bitSize, int setSize)
+        private static int OptimalNumberOfHashes(int bitSize, int setSize)
         {
             return (int)Math.Ceiling((bitSize / setSize) * Math.Log(2.0));
         }
