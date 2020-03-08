@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace BloomFilter
 {
     public class BloomFilter<T>
     {
-        Random _random;
-        int _bitSize, _numberOfHashes, _setSize;
-        BitArray _bitArray;
+        public int BitSize { get; set; }
+        public int SetSize { get; set; }
+        public int NumberOfHashes { get; set; }
 
-        #region Constructors
+        private readonly BitArray bitArray;
+
         /// <summary>
         /// Initializes the bloom filter and sets the optimal number of hashes. 
         /// </summary>
@@ -18,10 +19,11 @@ namespace BloomFilter
         /// <param name="setSize">Size of the set (n)</param>
         public BloomFilter(int bitSize, int setSize)
         {
-            _bitSize = bitSize;
-            _bitArray = new BitArray(bitSize);
-            _setSize = setSize;
-            _numberOfHashes = OptimalNumberOfHashes(_bitSize, _setSize);
+            BitSize = bitSize;
+            SetSize = setSize;
+            NumberOfHashes = OptimalNumberOfHashes(BitSize, SetSize);
+
+            bitArray = new BitArray(bitSize);
         }
 
         /// <summary>
@@ -32,71 +34,23 @@ namespace BloomFilter
         /// <param name="numberOfHashes">Number of hashing functions (k)</param>
         public BloomFilter(int bitSize, int setSize, int numberOfHashes)
         {
-            _bitSize = bitSize;
-            _bitArray = new BitArray(bitSize);
-            _setSize = setSize;
-            _numberOfHashes = numberOfHashes;
-        }
-        #endregion
+            BitSize = bitSize;
+            SetSize = setSize;
+            NumberOfHashes = numberOfHashes;
 
-        #region Properties
-        /// <summary>
-        /// Number of hashing functions (k)
-        /// </summary>
-        public int NumberOfHashes
-        {
-            set
-            {
-                _numberOfHashes = value;
-            }
-            get
-            {
-                return _numberOfHashes;
-            }
+            bitArray = new BitArray(bitSize);
         }
 
-        /// <summary>
-        /// Size of the set (n)
-        /// </summary>
-        public int SetSize
-        {
-            set
-            {
-                _setSize = value;
-            }
-            get
-            {
-                return _setSize;
-            }
-        }
-
-        /// <summary>
-        /// Size of the bloom filter in bits (m)
-        /// </summary>
-        public int BitSize
-        {
-            set
-            {
-                _bitSize = value;
-            }
-            get
-            {
-                return _bitSize;
-            }
-        }
-        #endregion
-
-        #region Public Methods
         /// <summary>
         /// Adds an item to the bloom filter.
         /// </summary>
         /// <param name="item">Item to be added</param>
         public void Add(T item)
         {
-            _random = new Random(Hash(item));
+            var random = new Random(Hash(item));
 
-            for (int i = 0; i < _numberOfHashes; i++)
-                _bitArray[_random.Next(_bitSize)] = true;
+            for (int i = 0; i < NumberOfHashes; i++)
+                bitArray[random.Next(BitSize)] = true;
         }
 
         /// <summary>
@@ -107,11 +61,11 @@ namespace BloomFilter
         /// <returns>True if the set probably contains the item</returns>
         public bool Contains(T item)
         {
-            _random = new Random(Hash(item));
+            var random = new Random(Hash(item));
 
-            for (int i = 0; i < _numberOfHashes; i++)
+            for (int i = 0; i < NumberOfHashes; i++)
             {
-                if (!_bitArray[_random.Next(_bitSize)])
+                if (!bitArray[random.Next(BitSize)])
                     return false;
             }
 
@@ -156,11 +110,9 @@ namespace BloomFilter
         /// <returns>Probability of a false positive</returns>
         public double FalsePositiveProbability()
         {
-            return Math.Pow((1 - Math.Exp(-_numberOfHashes * _setSize / (double)_bitSize)), _numberOfHashes);
+            return Math.Pow((1 - Math.Exp(-NumberOfHashes * SetSize / (double)BitSize)), NumberOfHashes);
         }
-        #endregion
 
-        #region Private Methods
         /// <summary>
         /// Hashing function for an object
         /// </summary>
@@ -182,6 +134,5 @@ namespace BloomFilter
         {
             return (int)Math.Ceiling((bitSize / setSize) * Math.Log(2.0));
         }
-        #endregion
     }
 }
